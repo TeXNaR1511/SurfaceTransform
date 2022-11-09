@@ -17,7 +17,7 @@ namespace SurfaceTransform
     {
 
         public static Camera camera;
-        private bool freeCamera = true;
+        private bool freeCamera = false;
 
         private bool _firstMove = true;
         private Vector2 _lastPos;
@@ -29,7 +29,7 @@ namespace SurfaceTransform
         //линия движения ровера
         private float[] roverLine;
 
-        private String drawType = "Point";
+        private String drawType = "Line";
 
         public Program()
             : base(800, 600, GraphicsMode.Default, "Rover Vision")
@@ -54,42 +54,10 @@ namespace SurfaceTransform
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
             //цвет фона
-            GL.ClearColor(1f, 1f, 1f, 1.0f);
+            GL.ClearColor(1f, 1f, 1f, 1f);
 
-            camera = new Camera(new Vector3(0, 2, 0), Width / (float)Height);//положение камеры начальное
+            camera = new Camera(new Vector3(0, 0, 3), Width / (float)Height);//положение камеры начальное
 
-            roverLine = new float[]
-                    {
-                        0f,0.7f,2f,
-                        0.7f,0.3f,2f,
-
-                        0.7f,0.3f,2f,
-                        2.2f,1f,2f,
-
-                        2.2f,1f,2f,
-                        3.3f,0.2f,2f,
-
-                        3.3f,0.2f,2f,
-                        4f,2.5f,2f,
-
-                        4f,2.5f,2f,
-                        5.7f,2.7f,2f,
-
-                        5.7f,2.7f,2f,
-                        6.3f,2.9f,2f,
-
-                        6.3f,2.9f,2f,
-                        7.2f,3.3f,2f,
-
-                        7.2f,3.3f,2f,
-                        8.4f,2.5f,2f,
-
-                        8.4f,2.5f,2f,
-                        9f,2.3f,2f,
-
-                        9f,2.3f,2f,
-                        10f,2.1f,2f,
-                    };
             //задаём Surfaces
             Surfaces = new List<Surface>()
             {
@@ -98,371 +66,13 @@ namespace SurfaceTransform
                 new Surface(
                     new float[]
                     {
-                        0f,0.5f,0f,
-                        1f,1.4f,0f,
+                        0f,0f,0f,
+                        1f,2f,0f,
+                        2f,1f,0f
 
-                        1f,1.4f,0f,
-                        1.9f,0.4f,0f,
-
-                        1.9f,0.4f,0f,
-                        3.1f,1.5f,0f,
-
-                        3.1f,1.5f,0f,
-                        4.2f,3.1f,0f,
-
-                        4.2f,3.1f,0f,
-                        5f,2.4f,0f,
-
-                        5f,2.4f,0f,
-                        6.1f,1.9f,0f,
-
-                        6.1f,1.9f,0f,
-                        6.7f,1.2f,0f,
-
-                        6.7f,1.2f,0f,
-                        8f,0.7f,0f,
-
-                        8f,0.7f,0f,
-                        9.2f,1.3f,0f,
-
-                        9.2f,1.3f,0f,
-                        10f,2.1f,0f,
                     },
-                    new Vector3(1f, 0.980f, 0.058f),
-                    drawType),
-                //вторая линия
-                new Surface(
-                    new float[]
-                    {
-                        0f,0.3f,1f,
-                        0.9f,0f,1f,
-
-                        0.9f,0f,1f,
-                        2.4f,2f,1f,
-
-                        2.4f,2f,1f,
-                        3.5f,1.3f,1f,
-
-                        3.5f,1.3f,1f,
-                        3.8f,2.5f,1f,
-
-                        3.8f,2.5f,1f,
-                        5.1f,2.4f,1f,
-
-                        5.1f,2.4f,1f,
-                        5.7f,1.8f,1f,
-
-                        5.7f,1.8f,1f,
-                        6.5f,1.3f,1f,
-
-                        6.5f,1.3f,1f,
-                        8.1f,0.2f,1f,
-
-                        8.1f,0.2f,1f,
-                        9.4f,0.9f,1f,
-
-                        9.4f,0.9f,1f,
-                        10f,1.5f,1f,
-                    },
-                    new Vector3(0.058f, 0.203f, 1f),
-                    drawType),
-                //третья линия
-                new Surface(
-                    new float[]
-                    {
-                        0f,0.7f,2f,
-                        0.7f,0.3f,2f,
-
-                        0.7f,0.3f,2f,
-                        2.2f,1f,2f,
-
-                        2.2f,1f,2f,
-                        3.3f,0.2f,2f,
-
-                        3.3f,0.2f,2f,
-                        4f,2.5f,2f,
-
-                        4f,2.5f,2f,
-                        5.7f,2.7f,2f,
-
-                        5.7f,2.7f,2f,
-                        6.3f,2.9f,2f,
-
-                        6.3f,2.9f,2f,
-                        7.2f,3.3f,2f,
-
-                        7.2f,3.3f,2f,
-                        8.4f,2.5f,2f,
-
-                        8.4f,2.5f,2f,
-                        9f,2.3f,2f,
-
-                        9f,2.3f,2f,
-                        10f,2.1f,2f,
-                    },
-                    new Vector3(1f, 0.211f, 0.058f),
-                    drawType),
-                //четвертая линия
-                new Surface(
-                    new float[]
-                    {
-                        0f,0.1f,3f,
-                        0.5f,0.7f,3f,
-
-                        0.5f,0.7f,3f,
-                        1.4f,0.4f,3f,
-
-                        1.4f,0.4f,3f,
-                        2.9f,1.2f,3f,
-
-                        2.9f,1.2f,3f,
-                        4.3f,2.6f,3f,
-
-                        4.3f,2.6f,3f,
-                        5.1f,3.2f,3f,
-
-                        5.1f,3.2f,3f,
-                        6.2f,2.1f,3f,
-
-                        6.2f,2.1f,3f,
-                        6.9f,1.7f,3f,
-
-                        6.9f,1.7f,3f,
-                        8.3f,2.8f,3f,
-
-                        8.3f,2.8f,3f,
-                        8.8f,1.4f,3f,
-
-                        8.8f,1.4f,3f,
-                        10f,2.1f,3f,
-                    },
-                    new Vector3(0.066f, 1f, 0.058f),
-                    drawType),
-                //пятая линия
-                new Surface(
-                    new float[]
-                    {
-                        0f,0.2f,4f,
-                        1.3f,0.5f,4f,
-
-                        1.3f,0.5f,4f,
-                        1.7f,1.2f,4f,
-
-                        1.7f,1.2f,4f,
-                        3.1f,1.5f,4f,
-
-                        3.1f,1.5f,4f,
-                        3.8f,2f,4f,
-
-                        3.8f,2f,4f,
-                        5.1f,2.2f,4f,
-
-                        5.1f,2.2f,4f,
-                        6.5f,2.8f,4f,
-
-                        6.5f,2.8f,4f,
-                        7.1f,2.5f,4f,
-
-                        7.1f,2.5f,4f,
-                        8f,3.1f,4f,
-
-                        8f,3.1f,4f,
-                        8.8f,2.4f,4f,
-
-                        8.8f,2.4f,4f,
-                        10f,1.5f,4f,
-                    },
-                    new Vector3(1f, 0.058f, 0.984f),
-                    drawType),
-                //далее черные линии соединяющие вершины ломаных с одинаковыми номерами
-                new Surface(
-                    new float[]
-                    {
-                        0f,0.5f,0f,
-                        0f,0.3f,1f,
-
-                        0f,0.3f,1f,
-                        0f,0.7f,2f,
-
-                        0f,0.7f,2f,
-                        0f,0.1f,3f,
-
-                        0f,0.1f,3f,
-                        0f,0.2f,4f,
-                    },
-                    new Vector3(0f, 0f, 0f),
-                    drawType),
-                new Surface(
-                    new float[]
-                    {
-                        1f,1.4f,0f,
-                        0.9f,0f,1f,
-
-                        0.9f,0f,1f,
-                        0.7f,0.3f,2f,
-
-                        0.7f,0.3f,2f,
-                        0.5f,0.7f,3f,
-
-                        0.5f,0.7f,3f,
-                        1.3f,0.5f,4f,
-                    },
-                    new Vector3(0f, 0f, 0f),
-                    drawType),
-                new Surface(
-                    new float[]
-                    {
-                        1.9f,0.4f,0f,
-                        2.4f,2f,1f,
-
-                        2.4f,2f,1f,
-                        2.2f,1f,2f,
-
-                        2.2f,1f,2f,
-                        1.4f,0.4f,3f,
-
-                        1.4f,0.4f,3f,
-                        1.7f,1.2f,4f,
-                    },
-                    new Vector3(0f, 0f, 0f),
-                    drawType),
-                new Surface(
-                    new float[]
-                    {
-                        3.1f,1.5f,0f,
-                        3.5f,1.3f,1f,
-
-                        3.5f,1.3f,1f,
-                        3.3f,0.2f,2f,
-
-                        3.3f,0.2f,2f,
-                        2.9f,1.2f,3f,
-
-                        2.9f,1.2f,3f,
-                        3.1f,1.5f,4f,
-                    },
-                    new Vector3(0f, 0f, 0f),
-                    drawType),
-                new Surface(
-                    new float[]
-                    {
-                        4.2f,3.1f,0f,
-                        3.8f,2.5f,1f,
-
-                        3.8f,2.5f,1f,
-                        4f,2.5f,2f,
-
-                        4f,2.5f,2f,
-                        4.3f,2.6f,3f,
-
-                        4.3f,2.6f,3f,
-                        3.8f,2f,4f,
-                    },
-                    new Vector3(0f, 0f, 0f),
-                    drawType),
-                new Surface(
-                    new float[]
-                    {
-                        5f,2.4f,0f,
-                        5.1f,2.4f,1f,
-
-                        5.1f,2.4f,1f,
-                        5.7f,2.7f,2f,
-
-                        5.7f,2.7f,2f,
-                        5.1f,3.2f,3f,
-
-                        5.1f,3.2f,3f,
-                        5.1f,2.2f,4f,
-                    },
-                    new Vector3(0f, 0f, 0f),
-                    drawType),
-                new Surface(
-                    new float[]
-                    {
-                        6.1f,1.9f,0f,
-                        5.7f,1.8f,1f,
-
-                        5.7f,1.8f,1f,
-                        6.3f,2.9f,2f,
-
-                        6.3f,2.9f,2f,
-                        6.2f,2.1f,3f,
-
-                        6.2f,2.1f,3f,
-                        6.5f,2.8f,4f,
-                    },
-                    new Vector3(0f, 0f, 0f),
-                    drawType),
-                new Surface(
-                    new float[]
-                    {
-                        6.7f,1.2f,0f,
-                        6.5f,1.3f,1f,
-
-                        6.5f,1.3f,1f,
-                        7.2f,3.3f,2f,
-
-                        7.2f,3.3f,2f,
-                        6.9f,1.7f,3f,
-
-                        6.9f,1.7f,3f,
-                        7.1f,2.5f,4f,
-                    },
-                    new Vector3(0f, 0f, 0f),
-                    drawType),
-                new Surface(
-                    new float[]
-                    {
-                        8f,0.7f,0f,
-                        8.1f,0.2f,1f,
-
-                        8.1f,0.2f,1f,
-                        8.4f,2.5f,2f,
-
-                        8.4f,2.5f,2f,
-                        8.3f,2.8f,3f,
-
-                        8.3f,2.8f,3f,
-                        8f,3.1f,4f,
-                    },
-                    new Vector3(0f, 0f, 0f),
-                    drawType),
-                new Surface(
-                    new float[]
-                    {
-                        9.2f,1.3f,0f,
-                        9.4f,0.9f,1f,
-
-                        9.4f,0.9f,1f,
-                        9f,2.3f,2f,
-
-                        9f,2.3f,2f,
-                        8.8f,1.4f,3f,
-
-                        8.8f,1.4f,3f,
-                        8.8f,2.4f,4f,
-                    },
-                    new Vector3(0f, 0f, 0f),
-                    drawType),
-                new Surface(
-                    new float[]
-                    {
-                        10f,2.1f,0f,
-                        10f,1.5f,1f,
-
-                        10f,1.5f,1f,
-                        10f,2.1f,2f,
-
-                        10f,2.1f,2f,
-                        10f,2.1f,3f,
-
-                        10f,2.1f,3f,
-                        10f,1.5f,4f,
-                    },
-                    new Vector3(0f, 0f, 0f),
-                    drawType),
-
+                    new Vector3(0f,0f,0f),
+                    "Line")
             };
 
             //задаём окружность
@@ -484,7 +94,7 @@ namespace SurfaceTransform
                 Surfaces[i].load();
             }
 
-            CursorVisible = false;
+            CursorVisible = true;
 
             base.OnLoad(e);
         }
@@ -500,7 +110,12 @@ namespace SurfaceTransform
             {
                 Surfaces[i].render(e, transform);
             }
-
+            if (freeCamera)
+            {
+                CursorVisible = false;
+                //Focused = true;
+            }
+            if(!freeCamera) CursorVisible = true;
             SwapBuffers();
 
             base.OnRenderFrame(e);
@@ -508,12 +123,27 @@ namespace SurfaceTransform
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+
+            Console.Write(camera.Position);
+            Console.Write("("+camera.return_pitch()+")");
+            Console.WriteLine("("+camera.return_yaw()+")");
             var input = Keyboard.GetState();
 
             if (input.IsKeyDown(Key.Escape)) Exit();
 
-            if (input.IsKeyDown(Key.F)) freeCamera = true;
-            if (input.IsKeyDown(Key.G)) freeCamera = false;
+            if (input.IsKeyDown(Key.F))
+            {
+                freeCamera = true;
+                camera.Pitch = 0;
+                camera.Yaw = MathHelper.RadiansToDegrees(-MathHelper.PiOver2);
+            }
+            if (input.IsKeyDown(Key.G))
+            {
+                freeCamera = false;
+                camera.Position = new Vector3(0, 0, 3);
+                camera.Pitch = 0;
+                camera.Yaw = MathHelper.RadiansToDegrees(-MathHelper.PiOver2);
+            }
 
             const float cameraSpeed = 3f;
             const float sensitivity = 0.2f;
@@ -548,21 +178,30 @@ namespace SurfaceTransform
             //движение при привязанной камере
             if (!freeCamera)
             {
-                camera.Position =
-                    new Vector3(camera.Position.X, camera.Ynofreecamera(roverLine, camera.Position.X) + 1f, 2f);
+                if (input.IsKeyDown(Key.A))
+                {
+                    camera.Position -= camera.Right * cameraSpeed * (float)e.Time; // Left
+                }
+                if (input.IsKeyDown(Key.D))
+                {
+                    camera.Position += camera.Right * cameraSpeed * (float)e.Time; // Right
+                }
                 if (input.IsKeyDown(Key.W))
                 {
-                    camera.Position += new Vector3(1f, 0f, 0f) * cameraSpeed * (float)e.Time; // Forward
+                    camera.Position += camera.Up * cameraSpeed * (float)e.Time; // Up
                 }
                 if (input.IsKeyDown(Key.S))
                 {
-                    camera.Position -= new Vector3(1f, 0f, 0f) * cameraSpeed * (float)e.Time; // Backwards
+                    camera.Position -= camera.Up * cameraSpeed * (float)e.Time; // Down
                 }
-                //ограничиваем движение вне линии при привязанной камере
-                if (camera.Position.X < roverLine[0]) camera.Position =
-                        new Vector3(roverLine[0], camera.Position.Y, camera.Position.Z);
-                if (camera.Position.X > roverLine[roverLine.Length - 3]) camera.Position =
-                        new Vector3(roverLine[roverLine.Length - 3], camera.Position.Y, camera.Position.Z);
+                if (input.IsKeyDown(Key.Space))
+                {
+                    camera.Position += camera.Front * cameraSpeed * (float)e.Time; // Up
+                }
+                if (input.IsKeyDown(Key.LShift))
+                {
+                    camera.Position -= camera.Front * cameraSpeed * (float)e.Time; // Down
+                }
             }
 
 
@@ -575,19 +214,29 @@ namespace SurfaceTransform
             }
             else
             {
+                if(freeCamera)
+                {
+                    var deltaX = mouse.X - _lastPos.X;
+                    var deltaY = mouse.Y - _lastPos.Y;
+                    _lastPos = new Vector2(mouse.X, mouse.Y);
+                    camera.Yaw += deltaX * sensitivity;
+                    camera.Pitch -= deltaY * sensitivity;
+                }
+                //if(!freeCamera)
+                //{
+                //    camera.Pitch = 0;
+                //    camera.Yaw = MathHelper.RadiansToDegrees(-MathHelper.PiOver2);
+                //}
+                //var deltaX = mouse.X - _lastPos.X;
+                //var deltaY = mouse.Y - _lastPos.Y;
+                //_lastPos = new Vector2(mouse.X, mouse.Y);
 
-                var deltaX = mouse.X - _lastPos.X;
-                var deltaY = mouse.Y - _lastPos.Y;
-                _lastPos = new Vector2(mouse.X, mouse.Y);
 
-
-                camera.Yaw += deltaX * sensitivity;
-                camera.Pitch -= deltaY * sensitivity;
+                //camera.Yaw += deltaX * sensitivity;
+                //camera.Pitch -= deltaY * sensitivity;
                 //здесь ограничиваем угол обзора(тангажа и рыскания) у несвободной камеры в 2*20 градусов 
-                if (!freeCamera && camera.Yaw < -20) camera.Yaw = -20;
-                if (!freeCamera && camera.Yaw > 20) camera.Yaw = 20;
-                if (!freeCamera && camera.Pitch < -20) camera.Pitch = -20;
-                if (!freeCamera && camera.Pitch > 20) camera.Pitch = 20;
+                //if (freeCamera) camera.Yaw += deltaX * sensitivity;
+                //if (freeCamera) camera.Pitch -= deltaY * sensitivity;
             }
 
             base.OnUpdateFrame(e);
@@ -595,7 +244,7 @@ namespace SurfaceTransform
 
         protected override void OnMouseMove(MouseMoveEventArgs e)
         {
-            if (Focused)
+            if (Focused && freeCamera)
             {
                 Mouse.SetPosition(X + Width / 2f, Y + Height / 2f);
             }

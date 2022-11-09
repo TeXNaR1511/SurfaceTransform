@@ -29,7 +29,9 @@ namespace SurfaceTransform
             surfaceShader.Use();
 
             GL.Enable(EnableCap.ProgramPointSize);
+            GL.Enable(EnableCap.PointSmooth);
             GL.PointSize(20f);
+            GL.LineWidth(4f);
 
             GL.GenVertexArrays(1, out surfaceVAO);
             GL.BindVertexArray(surfaceVAO);
@@ -52,7 +54,7 @@ namespace SurfaceTransform
 
             GL.BindVertexArray(surfaceVAO);
             //выбираем как будем рисовать
-            if (drawType == "Line") GL.DrawArrays(PrimitiveType.Lines, 0, surface.Length);
+            if (drawType == "Line") GL.DrawArrays(PrimitiveType.LineStrip, 0, surface.Length);
             if (drawType == "Polygon") GL.DrawArrays(PrimitiveType.Polygon, 0, surface.Length);
             if (drawType == "Point") GL.DrawArrays(PrimitiveType.Points, 0, surface.Length);
         }
@@ -64,5 +66,6 @@ namespace SurfaceTransform
 
     }
 }
+
 
 

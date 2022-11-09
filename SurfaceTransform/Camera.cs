@@ -11,9 +11,9 @@ namespace SurfaceTransform
 
         private Vector3 _right = Vector3.UnitX;
 
-        private float _pitch;
+        private float _pitch = 0;
 
-        private float _yaw = MathHelper.PiOver2;
+        private float _yaw = -MathHelper.PiOver2;
 
         private float _fov = MathHelper.PiOver2;
 
