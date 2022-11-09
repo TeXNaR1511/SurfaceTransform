@@ -66,12 +66,22 @@ namespace SurfaceTransform
                 new Surface(
                     new float[]
                     {
-                        0f,0f,0f,
-                        1f,2f,0f,
-                        2f,1f,0f
-
+                        0f,0f,
+                        1f,2f,
+                        2f,1f,
+                        3f,3f 
                     },
                     new Vector3(0f,0f,0f),
+                    "Point"),
+                new Surface(
+                    new float[]
+                    {
+                        0f,0f,
+                        1f,2f,
+                        2f,1f,
+                        3f,3f
+                    },
+                    new Vector3(0f,1f,0f),
                     "Line")
             };
 
@@ -124,9 +134,9 @@ namespace SurfaceTransform
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
 
-            Console.Write(camera.Position);
-            Console.Write("("+camera.return_pitch()+")");
-            Console.WriteLine("("+camera.return_yaw()+")");
+            //Console.Write(camera.Position);
+            //Console.Write("("+camera.return_pitch()+")");
+            //Console.WriteLine("("+camera.return_yaw()+")");
             var input = Keyboard.GetState();
 
             if (input.IsKeyDown(Key.Escape)) Exit();
@@ -237,6 +247,25 @@ namespace SurfaceTransform
                 //здесь ограничиваем угол обзора(тангажа и рыскания) у несвободной камеры в 2*20 градусов 
                 //if (freeCamera) camera.Yaw += deltaX * sensitivity;
                 //if (freeCamera) camera.Pitch -= deltaY * sensitivity;
+            }
+
+            //processing mouse button events
+
+            if(!freeCamera)
+            {
+                if(mouse.IsButtonDown(MouseButton.Left))
+                {
+                    //Console.WriteLine(mouse.X + " " + mouse.Y);
+                    //Console.WriteLine
+                    Surfaces[0].writeArray();
+                    Surfaces[1].writeArray();
+                    Surfaces[0].pushPoint((float)mouse.X, (float)mouse.Y);
+                    Surfaces[1].pushPoint((float)mouse.X, (float)mouse.Y);
+                    //Surfaces[0].load();
+                    //Surfaces[1].load();
+                    //Surfaces[0].render(e, Matrix4.Identity);
+                    //Surfaces[1].render(e, Matrix4.Identity);
+                }
             }
 
             base.OnUpdateFrame(e);

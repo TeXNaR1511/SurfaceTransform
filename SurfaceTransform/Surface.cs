@@ -31,7 +31,7 @@ namespace SurfaceTransform
             GL.Enable(EnableCap.ProgramPointSize);
             GL.Enable(EnableCap.PointSmooth);
             GL.PointSize(20f);
-            GL.LineWidth(4f);
+            GL.LineWidth(6f);
 
             GL.GenVertexArrays(1, out surfaceVAO);
             GL.BindVertexArray(surfaceVAO);
@@ -40,7 +40,7 @@ namespace SurfaceTransform
             GL.BufferData(BufferTarget.ArrayBuffer, surface.Length * sizeof(float), surface, BufferUsageHint.StaticDraw);
 
             GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 2 * sizeof(float), 0);
         }
 
         public void render(FrameEventArgs e, Matrix4 model)
@@ -54,9 +54,9 @@ namespace SurfaceTransform
 
             GL.BindVertexArray(surfaceVAO);
             //выбираем как будем рисовать
-            if (drawType == "Line") GL.DrawArrays(PrimitiveType.LineStrip, 0, surface.Length);
-            if (drawType == "Polygon") GL.DrawArrays(PrimitiveType.Polygon, 0, surface.Length);
-            if (drawType == "Point") GL.DrawArrays(PrimitiveType.Points, 0, surface.Length);
+            if (drawType == "Line") GL.DrawArrays(PrimitiveType.LineStrip, 0, surface.Length/2);
+            if (drawType == "Polygon") GL.DrawArrays(PrimitiveType.Polygon, 0, surface.Length/2);
+            if (drawType == "Point") GL.DrawArrays(PrimitiveType.Points, 0, surface.Length/2);
         }
 
         public void destroy(EventArgs e)
@@ -64,6 +64,20 @@ namespace SurfaceTransform
             GL.DeleteProgram(surfaceShader.Handle);
         }
 
+        public void pushPoint(float a, float b)
+        {
+            surface.Append(a);
+            surface.Append(b);
+        }
+
+        public void writeArray()
+        {
+            for(int i=0;i<surface.Length;i++)
+            {
+                Console.Write(surface[i]+",");
+            }
+            Console.WriteLine();
+        }
     }
 }
 
