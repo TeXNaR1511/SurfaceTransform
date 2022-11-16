@@ -22,6 +22,18 @@ namespace SurfaceTransform
         private bool _firstMove = true;
         private Vector2 _lastPos;
 
+        private float pointSensitivity = 1f;
+
+        private bool isPressedBefore = false;
+
+        private bool isFrontLine = true;
+
+        private int numberOfLine = 0;
+
+        private int MaxNumberOfLine = 2;
+
+        private bool isEnterPressedBefore = false;
+
         //private float[] circle;
 
         //список со всеми линиями - экземплярами класса Surface
@@ -64,24 +76,36 @@ namespace SurfaceTransform
                 //чтобы задать новую линию нужно дать массив вершин и цвет
                 //первая линия
                 new Surface(
-                    new float[]
+                    new List<float>
                     {
-                        0f,0f,
-                        1f,2f,
-                        2f,1f,
-                        3f,3f 
+                        0f,0f,0f,
+                        1f,0f,0f
                     },
                     new Vector3(0f,0f,0f),
                     "Point"),
                 new Surface(
-                    new float[]
+                    new List<float>
                     {
-                        0f,0f,
-                        1f,2f,
-                        2f,1f,
-                        3f,3f
+                        0f,0f,0f,
+                        1f,0f,0f
                     },
                     new Vector3(0f,1f,0f),
+                    "Line"),
+                new Surface(
+                    new List<float>
+                    {
+                        0f,0f,1f,
+                        1f,0f,1f
+                    },
+                    new Vector3(0f,0f,0f),
+                    "Point"),
+                new Surface(
+                    new List<float>
+                    {
+                        0f,0f,1f,
+                        1f,0f,1f
+                    },
+                    new Vector3(0f,0f,1f),
                     "Line")
             };
 
@@ -212,6 +236,60 @@ namespace SurfaceTransform
                 {
                     camera.Position -= camera.Front * cameraSpeed * (float)e.Time; // Down
                 }
+                if(input.IsKeyDown(Key.Enter) && !isEnterPressedBefore)
+                {
+                    numberOfLine++;
+                    isEnterPressedBefore = true;
+                    if (numberOfLine > MaxNumberOfLine) numberOfLine = MaxNumberOfLine;
+                }
+                if(numberOfLine<MaxNumberOfLine)
+                {
+                    if (input.IsKeyDown(Key.RShift) && !isPressedBefore)
+                    {
+                        Surfaces[0 + 2 * numberOfLine].pushPoint(Surfaces[0 + 2 * numberOfLine].getLastPoint()[0], Surfaces[0 + 2 * numberOfLine].getLastPoint()[1], Surfaces[0 + 2 * numberOfLine].getLastPoint()[2]);
+                        Surfaces[0 + 2 * numberOfLine].load();
+                        Surfaces[1 + 2 * numberOfLine].pushPoint(Surfaces[1 + 2 * numberOfLine].getLastPoint()[0], Surfaces[1 + 2 * numberOfLine].getLastPoint()[1], Surfaces[1 + 2 * numberOfLine].getLastPoint()[2]);
+                        Surfaces[1 + 2 * numberOfLine].load();
+                        //Console.WriteLine(Surfaces[0].getSurfaceSize());
+                        isPressedBefore = true;
+                    }
+                    if (input.IsKeyDown(Key.Up))
+                    {
+                        Surfaces[0 + 2 * numberOfLine].movePoint(false, pointSensitivity * (float)e.Time);
+                        Surfaces[0 + 2 * numberOfLine].load();
+                        Surfaces[1 + 2 * numberOfLine].movePoint(false, pointSensitivity * (float)e.Time);
+                        Surfaces[1 + 2 * numberOfLine].load();
+                        isPressedBefore = false;
+                        isEnterPressedBefore = false;
+                    }
+                    if (input.IsKeyDown(Key.Down))
+                    {
+                        Surfaces[0 + 2 * numberOfLine].movePoint(false, -pointSensitivity * (float)e.Time);
+                        Surfaces[0 + 2 * numberOfLine].load();
+                        Surfaces[1 + 2 * numberOfLine].movePoint(false, -pointSensitivity * (float)e.Time);
+                        Surfaces[1 + 2 * numberOfLine].load();
+                        isPressedBefore = false;
+                        isEnterPressedBefore = false;
+                    }
+                    if (input.IsKeyDown(Key.Left))
+                    {
+                        Surfaces[0 + 2 * numberOfLine].movePoint(true, -pointSensitivity * (float)e.Time);
+                        Surfaces[0 + 2 * numberOfLine].load();
+                        Surfaces[1 + 2 * numberOfLine].movePoint(true, -pointSensitivity * (float)e.Time);
+                        Surfaces[1 + 2 * numberOfLine].load();
+                        isPressedBefore = false;
+                        isEnterPressedBefore = false;
+                    }
+                    if (input.IsKeyDown(Key.Right))
+                    {
+                        Surfaces[0 + 2 * numberOfLine].movePoint(true, pointSensitivity * (float)e.Time);
+                        Surfaces[0 + 2 * numberOfLine].load();
+                        Surfaces[1 + 2 * numberOfLine].movePoint(true, pointSensitivity * (float)e.Time);
+                        Surfaces[1 + 2 * numberOfLine].load();
+                        isPressedBefore = false;
+                        isEnterPressedBefore = false;
+                    }
+                }
             }
 
 
@@ -251,22 +329,28 @@ namespace SurfaceTransform
 
             //processing mouse button events
 
-            if(!freeCamera)
-            {
-                if(mouse.IsButtonDown(MouseButton.Left))
-                {
-                    //Console.WriteLine(mouse.X + " " + mouse.Y);
-                    //Console.WriteLine
-                    Surfaces[0].writeArray();
-                    Surfaces[1].writeArray();
-                    Surfaces[0].pushPoint((float)mouse.X, (float)mouse.Y);
-                    Surfaces[1].pushPoint((float)mouse.X, (float)mouse.Y);
-                    //Surfaces[0].load();
-                    //Surfaces[1].load();
-                    //Surfaces[0].render(e, Matrix4.Identity);
-                    //Surfaces[1].render(e, Matrix4.Identity);
-                }
-            }
+            //2if(!freeCamera)
+            //2{
+            //2    //for(int i = 0; i < Surfaces[0].getArray().Length;i+=2)
+            //2    //{
+            //2    //    Console.WriteLine(camera.GetProjectionMatrix()*camera.GetViewMatrix() * new Vector4(Surfaces[0].getArray()[i], Surfaces[0].getArray()[i + 1], 0f, 0f));
+            //2    //}
+            //2    // 2d Viewport Coordinates
+            //2    //Console.WriteLine(Vector3.Project(new Vector3(mouse.X,mouse.Y,0f),0,0,Width,Height, 0.01f, 100000f,Matrix4.Mult(camera.GetViewMatrix(),camera.GetOrthoProjectionMatrix())));
+            //2    if (mouse.IsButtonDown(MouseButton.Left))
+            //2    {
+            //2        //Console.WriteLine((mouse.X-Width/2f)/(Width/2f) + " " + (-mouse.Y - Height / 2f) / (Height / 2f));
+            //2        //Console.WriteLine();
+            //2        //Surfaces[0].writeArray();
+            //2        //Surfaces[1].writeArray();
+            //2        //Surfaces[0].pushPoint((float)mouse.X, (float)mouse.Y);
+            //2        //Surfaces[1].pushPoint((float)mouse.X, (float)mouse.Y);
+            //2        //Surfaces[0].load();
+            //2        //Surfaces[1].load();
+            //2        //Surfaces[0].render(e, Matrix4.Identity);
+            //2        //Surfaces[1].render(e, Matrix4.Identity);
+            //2    }
+            //2}
 
             base.OnUpdateFrame(e);
         }
