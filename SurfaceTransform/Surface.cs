@@ -88,7 +88,7 @@ namespace SurfaceTransform
         {
             return surface;
         }
-        public void movePoint(bool XorY, float coord)
+        public void moveLastPoint(bool XorY, float coord)
         {
             if(XorY)
             {
@@ -97,6 +97,18 @@ namespace SurfaceTransform
             else
             {
                 surface[surface.Count - 2] += coord;
+            }
+        }
+
+        public void moveSpecificPoint(bool XorY, int numberOfPoint, float coord)
+        {
+            if (XorY)
+            {
+                surface[0+3*numberOfPoint] += coord;
+            }
+            else
+            {
+                surface[1+3*numberOfPoint] += coord;
             }
         }
 

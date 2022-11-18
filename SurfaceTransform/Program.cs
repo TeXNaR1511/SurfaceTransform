@@ -26,13 +26,17 @@ namespace SurfaceTransform
 
         private bool isPressedBefore = false;
 
+        private bool isEditPoints = false;
+
         private bool isFrontLine = true;
 
         private int numberOfLine = 0;
 
-        private int MaxNumberOfLine = 2;
+        private int MaxNumberOfLine;
 
         private bool isEnterPressedBefore = false;
+
+        private int firstEditingPoint = 0;
 
         //private float[] circle;
 
@@ -68,13 +72,13 @@ namespace SurfaceTransform
             //цвет фона
             GL.ClearColor(1f, 1f, 1f, 1f);
 
-            camera = new Camera(new Vector3(0, 0, 3), Width / (float)Height);//положение камеры начальное
+            camera = new Camera(new Vector3(0, 0, 2), Width / (float)Height);//положение камеры начальное
 
             //задаём Surfaces
             Surfaces = new List<Surface>()
             {
                 //чтобы задать новую линию нужно дать массив вершин и цвет
-                //первая линия
+                //первая линия типо левое колесо
                 new Surface(
                     new List<float>
                     {
@@ -91,24 +95,42 @@ namespace SurfaceTransform
                     },
                     new Vector3(0f,1f,0f),
                     "Line"),
+                //вторая линия типо над ней брюхо едет
                 new Surface(
                     new List<float>
                     {
-                        0f,0f,1f,
-                        1f,0f,1f
+                        0f,0f,2f,
+                        1f,0f,2f
                     },
                     new Vector3(0f,0f,0f),
                     "Point"),
                 new Surface(
                     new List<float>
                     {
-                        0f,0f,1f,
-                        1f,0f,1f
+                        0f,0f,2f,
+                        1f,0f,2f
+                    },
+                    new Vector3(1f,0f,0f),
+                    "Line"),
+                //третья линия типо правое колесо
+                new Surface(
+                    new List<float>
+                    {
+                        0f,0f,4f,
+                        1f,0f,4f
+                    },
+                    new Vector3(0f,0f,0f),
+                    "Point"),
+                new Surface(
+                    new List<float>
+                    {
+                        0f,0f,4f,
+                        1f,0f,4f
                     },
                     new Vector3(0f,0f,1f),
                     "Line")
             };
-
+            MaxNumberOfLine = Surfaces.Count / 2;
             //задаём окружность
             //circle = new float[] {};
             //List<float> cir = new List<float>();
@@ -212,6 +234,15 @@ namespace SurfaceTransform
             //движение при привязанной камере
             if (!freeCamera)
             {
+                if (input.IsKeyDown(Key.E))
+                {
+                    isEditPoints = true;
+                    numberOfLine= 0;
+                    isPressedBefore = false;
+                    isEnterPressedBefore= false;
+                    firstEditingPoint = 0;
+                }
+                if (input.IsKeyDown(Key.R)) isEditPoints = false;
                 if (input.IsKeyDown(Key.A))
                 {
                     camera.Position -= camera.Right * cameraSpeed * (float)e.Time; // Left
@@ -241,51 +272,100 @@ namespace SurfaceTransform
                     numberOfLine++;
                     isEnterPressedBefore = true;
                     if (numberOfLine > MaxNumberOfLine) numberOfLine = MaxNumberOfLine;
+                    if(isEditPoints) firstEditingPoint = 0;
                 }
                 if(numberOfLine<MaxNumberOfLine)
                 {
                     if (input.IsKeyDown(Key.RShift) && !isPressedBefore)
                     {
-                        Surfaces[0 + 2 * numberOfLine].pushPoint(Surfaces[0 + 2 * numberOfLine].getLastPoint()[0], Surfaces[0 + 2 * numberOfLine].getLastPoint()[1], Surfaces[0 + 2 * numberOfLine].getLastPoint()[2]);
-                        Surfaces[0 + 2 * numberOfLine].load();
-                        Surfaces[1 + 2 * numberOfLine].pushPoint(Surfaces[1 + 2 * numberOfLine].getLastPoint()[0], Surfaces[1 + 2 * numberOfLine].getLastPoint()[1], Surfaces[1 + 2 * numberOfLine].getLastPoint()[2]);
-                        Surfaces[1 + 2 * numberOfLine].load();
+                        if (!isEditPoints)
+                        {
+                            Surfaces[0 + 2 * numberOfLine].pushPoint(Surfaces[0 + 2 * numberOfLine].getLastPoint()[0], Surfaces[0 + 2 * numberOfLine].getLastPoint()[1], Surfaces[0 + 2 * numberOfLine].getLastPoint()[2]);
+                            Surfaces[0 + 2 * numberOfLine].load();
+                            Surfaces[1 + 2 * numberOfLine].pushPoint(Surfaces[1 + 2 * numberOfLine].getLastPoint()[0], Surfaces[1 + 2 * numberOfLine].getLastPoint()[1], Surfaces[1 + 2 * numberOfLine].getLastPoint()[2]);
+                            Surfaces[1 + 2 * numberOfLine].load();
+                        }
+                        if (isEditPoints && firstEditingPoint < Surfaces[0 + 2 * numberOfLine].getSurfaceSize() / 3 - 1)
+                        {
+                            firstEditingPoint++;
+                            Console.WriteLine(Surfaces[0 + 2 * numberOfLine].getSurfaceSize() / 3 + " " + firstEditingPoint);
+                        }
                         //Console.WriteLine(Surfaces[0].getSurfaceSize());
                         isPressedBefore = true;
                     }
                     if (input.IsKeyDown(Key.Up))
                     {
-                        Surfaces[0 + 2 * numberOfLine].movePoint(false, pointSensitivity * (float)e.Time);
-                        Surfaces[0 + 2 * numberOfLine].load();
-                        Surfaces[1 + 2 * numberOfLine].movePoint(false, pointSensitivity * (float)e.Time);
-                        Surfaces[1 + 2 * numberOfLine].load();
+                        if (!isEditPoints)
+                        {
+                            Surfaces[0 + 2 * numberOfLine].moveLastPoint(false, pointSensitivity * (float)e.Time);
+                            Surfaces[0 + 2 * numberOfLine].load();
+                            Surfaces[1 + 2 * numberOfLine].moveLastPoint(false, pointSensitivity * (float)e.Time);
+                            Surfaces[1 + 2 * numberOfLine].load();
+                        }
+                        else
+                        {
+                            Surfaces[0 + 2 * numberOfLine].moveSpecificPoint(false, firstEditingPoint, pointSensitivity * (float)e.Time);
+                            Surfaces[0 + 2 * numberOfLine].load();
+                            Surfaces[1 + 2 * numberOfLine].moveSpecificPoint(false, firstEditingPoint, pointSensitivity * (float)e.Time);
+                            Surfaces[1 + 2 * numberOfLine].load();
+                        }
                         isPressedBefore = false;
                         isEnterPressedBefore = false;
                     }
                     if (input.IsKeyDown(Key.Down))
                     {
-                        Surfaces[0 + 2 * numberOfLine].movePoint(false, -pointSensitivity * (float)e.Time);
-                        Surfaces[0 + 2 * numberOfLine].load();
-                        Surfaces[1 + 2 * numberOfLine].movePoint(false, -pointSensitivity * (float)e.Time);
-                        Surfaces[1 + 2 * numberOfLine].load();
+                        if(!isEditPoints)
+                        {
+                            Surfaces[0 + 2 * numberOfLine].moveLastPoint(false, -pointSensitivity * (float)e.Time);
+                            Surfaces[0 + 2 * numberOfLine].load();
+                            Surfaces[1 + 2 * numberOfLine].moveLastPoint(false, -pointSensitivity * (float)e.Time);
+                            Surfaces[1 + 2 * numberOfLine].load();
+                        }
+                        else
+                        {
+                            Surfaces[0 + 2 * numberOfLine].moveSpecificPoint(false, firstEditingPoint, -pointSensitivity * (float)e.Time);
+                            Surfaces[0 + 2 * numberOfLine].load();
+                            Surfaces[1 + 2 * numberOfLine].moveSpecificPoint(false, firstEditingPoint, -pointSensitivity * (float)e.Time);
+                            Surfaces[1 + 2 * numberOfLine].load();
+                        }
                         isPressedBefore = false;
                         isEnterPressedBefore = false;
                     }
                     if (input.IsKeyDown(Key.Left))
                     {
-                        Surfaces[0 + 2 * numberOfLine].movePoint(true, -pointSensitivity * (float)e.Time);
-                        Surfaces[0 + 2 * numberOfLine].load();
-                        Surfaces[1 + 2 * numberOfLine].movePoint(true, -pointSensitivity * (float)e.Time);
-                        Surfaces[1 + 2 * numberOfLine].load();
+                        if(!isEditPoints)
+                        {
+                            Surfaces[0 + 2 * numberOfLine].moveLastPoint(true, -pointSensitivity * (float)e.Time);
+                            Surfaces[0 + 2 * numberOfLine].load();
+                            Surfaces[1 + 2 * numberOfLine].moveLastPoint(true, -pointSensitivity * (float)e.Time);
+                            Surfaces[1 + 2 * numberOfLine].load();
+                        }
+                        else
+                        {
+                            Surfaces[0 + 2 * numberOfLine].moveSpecificPoint(true, firstEditingPoint, -pointSensitivity * (float)e.Time);
+                            Surfaces[0 + 2 * numberOfLine].load();
+                            Surfaces[1 + 2 * numberOfLine].moveSpecificPoint(true, firstEditingPoint, -pointSensitivity * (float)e.Time);
+                            Surfaces[1 + 2 * numberOfLine].load();
+                        }
                         isPressedBefore = false;
                         isEnterPressedBefore = false;
                     }
                     if (input.IsKeyDown(Key.Right))
                     {
-                        Surfaces[0 + 2 * numberOfLine].movePoint(true, pointSensitivity * (float)e.Time);
-                        Surfaces[0 + 2 * numberOfLine].load();
-                        Surfaces[1 + 2 * numberOfLine].movePoint(true, pointSensitivity * (float)e.Time);
-                        Surfaces[1 + 2 * numberOfLine].load();
+                        if(!isEditPoints)
+                        {
+                            Surfaces[0 + 2 * numberOfLine].moveLastPoint(true, pointSensitivity * (float)e.Time);
+                            Surfaces[0 + 2 * numberOfLine].load();
+                            Surfaces[1 + 2 * numberOfLine].moveLastPoint(true, pointSensitivity * (float)e.Time);
+                            Surfaces[1 + 2 * numberOfLine].load();
+                        }
+                        else
+                        {
+                            Surfaces[0 + 2 * numberOfLine].moveSpecificPoint(true, firstEditingPoint, pointSensitivity * (float)e.Time);
+                            Surfaces[0 + 2 * numberOfLine].load();
+                            Surfaces[1 + 2 * numberOfLine].moveSpecificPoint(true, firstEditingPoint, pointSensitivity * (float)e.Time);
+                            Surfaces[1 + 2 * numberOfLine].load();
+                        }
                         isPressedBefore = false;
                         isEnterPressedBefore = false;
                     }
